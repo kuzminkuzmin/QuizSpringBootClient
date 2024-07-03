@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="540.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dmitriikuzmin.quizspringbootclient.controller.GetQuizController">
+   <children>
+      <TextField fx:id="numberOfQuestionsTextField" layoutX="150.0" layoutY="225.0" prefHeight="25.0" prefWidth="380.0" />
+      <ComboBox fx:id="categoryComboBox" layoutX="150.0" layoutY="280.0" prefHeight="25.0" prefWidth="180.0" />
+      <ComboBox fx:id="difficultyComboBox" layoutX="350.0" layoutY="280.0" prefHeight="25.0" prefWidth="180.0" />
+      <Button layoutX="150.0" layoutY="325.0" mnemonicParsing="false" onAction="#startButton" prefHeight="25.0" prefWidth="180.0" text="Start" />
+      <Button layoutX="350.0" layoutY="325.0" mnemonicParsing="false" onAction="#saveButton" prefHeight="25.0" prefWidth="180.0" text="Save" />
+      <Label layoutX="150.0" layoutY="205.0" text="Number of questions:" />
+      <Label layoutX="150.0" layoutY="260.0" text="Select Category:" />
+      <Label layoutX="350.0" layoutY="260.0" text="Select Difficulty:" />
+   </children>
+</AnchorPane>
