@@ -6,6 +6,7 @@ import com.dmitriikuzmin.quizspringbootclient.model.Participant;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AdminRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AuthRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.ParticipantRepository;
+import com.dmitriikuzmin.quizspringbootclient.util.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -16,6 +17,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
+import java.lang.constant.Constable;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.prefs.Preferences;
 
@@ -39,15 +42,22 @@ public class AuthorizationController {
             if (role.equals("ADMIN")) {
                 AdminRepository adminRepository = new AdminRepository(token);
                 Admin admin = adminRepository.getByName(claims.getBody().getSubject());
+
                 Preferences preferences = Preferences.userRoot();
                 preferences.putLong("quizUserId", admin.getId());
+                preferences.put("quizUserToken", token);
+
                 App.openWindow("mainAdmin.fxml", "Quiz administration", token);
                 App.closeWindow(actionEvent);
             } else if (role.equals("PARTICIPANT")) {
                 ParticipantRepository participantRepository = new ParticipantRepository(token);
                 Participant participant = participantRepository.getByUsername(claims.getBody().getSubject());
+
                 Preferences preferences = Preferences.userRoot();
                 preferences.putLong("quizUserId", participant.getId());
+                preferences.put("quizUserToken", token);
+                preferences.put("quizTokenDateTime", LocalDateTime.now().toString());
+
                 App.openWindow("main.fxml", "Quiz", token);
                 App.closeWindow(actionEvent);
             }

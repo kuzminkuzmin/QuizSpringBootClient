@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.prefs.Preferences;
 
 public class App extends Application {
@@ -18,16 +20,23 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         Preferences preferences = Preferences.userRoot();
         long userId = preferences.getLong("quizUserId", -1);
-        if (userId == -1) {
+        //TODO add token to Preferences, check token expired
+        String token = preferences.get("quizUserToken", "");
+
+        String tokenDate = preferences.get("quizTokenDateTime", "");
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(tokenDate, dateTimeFormatter);
+        System.out.println(localDateTime);
+
+        if (userId == -1 || token.isEmpty()) {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("authorization.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 240, 360);
             stage.setTitle("Log In");
             stage.setScene(scene);
             stage.show();
         } else {
-            //TODO auth by id?
-
-            App.openWindow("main.fxml", "Quiz", null);
+            App.openWindow("main.fxml", "Quiz", token);
         }
 
     }
