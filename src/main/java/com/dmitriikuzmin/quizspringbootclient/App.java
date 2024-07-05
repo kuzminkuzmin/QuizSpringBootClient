@@ -11,15 +11,25 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("authorization.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 240, 360);
-        stage.setTitle("Log In");
-        stage.setScene(scene);
-        stage.show();
+        Preferences preferences = Preferences.userRoot();
+        long userId = preferences.getLong("quizUserId", -1);
+        if (userId == -1) {
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("authorization.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 240, 360);
+            stage.setTitle("Log In");
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            //TODO auth by id?
+
+            App.openWindow("main.fxml", "Quiz", null);
+        }
+
     }
 
     public static void main(String[] args) {

@@ -16,4 +16,9 @@ import java.util.List;
 @SuperBuilder
 public class Participant extends User {
     private List<Quiz> quizzes = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return this.getFirstName() + " " + this.getLastName();
+    }
 }

@@ -27,4 +27,9 @@ public class Quiz {
     @JsonProperty("results")
     @NonNull
     private List<Question> questions = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Quiz" + " " + id + " " + dateTimeRequested;
+    }
 }

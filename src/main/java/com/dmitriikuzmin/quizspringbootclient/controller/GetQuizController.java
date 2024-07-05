@@ -5,9 +5,6 @@ import com.dmitriikuzmin.quizspringbootclient.model.Participant;
 import com.dmitriikuzmin.quizspringbootclient.model.Quiz;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.ParticipantRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.QuizRepository;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -16,14 +13,15 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 public class GetQuizController implements ControllerData<String> {
     private String token;
-    private ParticipantRepository participantRepository;
+
     private Participant participant;
+
     private HashMap<String, Integer> category = new HashMap<>();
 
     @FXML
@@ -38,13 +36,11 @@ public class GetQuizController implements ControllerData<String> {
     @Override
     public void initData(String value) {
         this.token = value;
-        Jws<Claims> claims = Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString("quiz".getBytes()))
-                .parseClaimsJws(this.token);
-        this.participantRepository = new ParticipantRepository(this.token);
-
         try {
-            this.participant = this.participantRepository.getByUsername(claims.getBody().getSubject());
+            ParticipantRepository participantRepository = new ParticipantRepository(token);
+            Preferences preferences = Preferences.userRoot();
+            this.participant = participantRepository.get(preferences.getLong("quizUserId", -1));
+
             this.category.put("Animals", 27);
             this.category.put("Geography", 22);
             this.category.put("General Knowledge", 9);
@@ -66,18 +62,16 @@ public class GetQuizController implements ControllerData<String> {
         }
         String category = categoryComboBox.getSelectionModel().getSelectedItem();
         int categoryInt = this.category.get(category);
-        if (category == null || category.isEmpty()) {
+        if (category.isEmpty()) {
             App.showAlert("Error", "Please select a category", Alert.AlertType.ERROR);
         }
-        String difficulty = difficultyComboBox.getSelectionModel().getSelectedItem();
-        if (difficulty == null || difficulty.isEmpty()) {
+        String difficulty = difficultyComboBox.getSelectionModel().getSelectedItem().toLowerCase();
+        if (difficulty.isEmpty()) {
             App.showAlert("Error", "Please select a difficulty", Alert.AlertType.ERROR);
         }
-        String settings = "?amount=" + numberOfQuestions + "&category=" + categoryInt + "&difficulty=" + difficulty;
-
         QuizRepository quizRepository = new QuizRepository(token);
         try {
-            Quiz quiz = quizRepository.post(this.participant.getId(), settings);
+            Quiz quiz = quizRepository.post(this.participant.getId(), numberOfQuestions, categoryInt, difficulty);
             System.out.println(quiz);
         } catch (IOException e) {
             throw new RuntimeException(e);

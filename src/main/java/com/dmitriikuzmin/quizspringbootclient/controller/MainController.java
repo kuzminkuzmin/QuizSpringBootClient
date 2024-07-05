@@ -15,6 +15,7 @@ import javafx.scene.control.ListView;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.prefs.Preferences;
 
 public class MainController implements ControllerData<String> {
     private String token;
@@ -33,17 +34,13 @@ public class MainController implements ControllerData<String> {
     @Override
     public void initData(String value) {
         this.token = value;
-        Jws<Claims> claims = Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString("quiz".getBytes()))
-                .parseClaimsJws(this.token);
         this.participantRepository = new ParticipantRepository(this.token);
-
+        Preferences preferences = Preferences.userRoot();
         try {
-            Participant participant = this.participantRepository.getByUsername(claims.getBody().getSubject());
+            Participant participant = this.participantRepository.get(preferences.getLong("quizUserId", -1));
             this.firstNameLabel.setText(participant.getFirstName());
             this.lastNameLabel.setText(participant.getLastName());
             this.quizzesListView.setItems(FXCollections.observableList(participant.getQuizzes()));
-            System.out.println(participant);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -62,6 +59,8 @@ public class MainController implements ControllerData<String> {
     @FXML
     public void exitButton(ActionEvent actionEvent) {
         try {
+            Preferences preferences = Preferences.userRoot();
+            preferences.putLong("quizUserId", -1);
             App.openWindow("authorization.fxml", "Authorization", null);
             App.closeWindow(actionEvent);
         } catch (IOException e) {

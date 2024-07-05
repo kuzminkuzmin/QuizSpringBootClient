@@ -12,7 +12,11 @@ import java.util.List;
 
 public interface QuizService {
     @POST("{participantId}/")
-    Call<ResponseResult<Quiz>> post(@Path("participantId") long participantId, @Query("settings") String settings);
+    Call<ResponseResult<Quiz>> post(
+            @Path("participantId") long participantId,
+            @Query("amount") int settings,
+            @Query("category") int category,
+            @Query("difficulty") String difficulty);
 
     @GET("{id}")
     Call<ResponseResult<Quiz>> get(@Path("id") long id);

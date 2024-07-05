@@ -1,7 +1,7 @@
 package com.dmitriikuzmin.quizspringbootclient.retrofit;
 
 import com.dmitriikuzmin.quizspringbootclient.dto.ResponseResult;
-import com.dmitriikuzmin.quizspringbootclient.model.Quiz;
+import com.dmitriikuzmin.quizspringbootclient.model.Admin;
 import com.dmitriikuzmin.quizspringbootclient.util.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,20 +12,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
-import java.util.List;
 
-public class QuizRepository {
+public class AdminRepository {
     private ObjectMapper objectMapper;
-    private final QuizService quizService;
+    private final AdminService adminService;
 
-    public QuizRepository(String token) {
+    public AdminRepository(String token) {
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new BasicAuthInterceptor(token)).build();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.URL + "quiz/")
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(Constants.URL + "admin/")
                 .addConverterFactory(JacksonConverterFactory.create(objectMapper)).client(client)
                 .build();
-        this.quizService = retrofit.create(QuizService.class);
+        this.adminService = retrofit.create(AdminService.class);
     }
 
     private <T> T getData(Response<ResponseResult<T>> execute) throws IOException {
@@ -40,19 +39,13 @@ public class QuizRepository {
         return execute.body().getData();
     }
 
-    public Quiz post(long participantId, int amount, int category, String difficulty) throws IOException {
-        Response<ResponseResult<Quiz>> execute = this.quizService.post(
-                participantId, amount, category, difficulty).execute();
+    public Admin get(long id) throws IOException {
+        Response<ResponseResult<Admin>> execute = this.adminService.get(id).execute();
         return getData(execute);
     }
 
-    public Quiz get(long id) throws IOException {
-        Response<ResponseResult<Quiz>> execute = this.quizService.get(id).execute();
-        return getData(execute);
-    }
-
-    public List<Quiz> getByParticipant(long participantId) throws IOException {
-        Response<ResponseResult<List<Quiz>>> execute = this.quizService.getByParticipant(participantId).execute();
+    public Admin getByName(String username) throws IOException {
+        Response<ResponseResult<Admin>> execute = this.adminService.getByUsername(username).execute();
         return getData(execute);
     }
 }

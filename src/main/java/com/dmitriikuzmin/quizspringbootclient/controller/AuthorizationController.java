@@ -1,7 +1,9 @@
 package com.dmitriikuzmin.quizspringbootclient.controller;
 
 import com.dmitriikuzmin.quizspringbootclient.App;
+import com.dmitriikuzmin.quizspringbootclient.model.Admin;
 import com.dmitriikuzmin.quizspringbootclient.model.Participant;
+import com.dmitriikuzmin.quizspringbootclient.retrofit.AdminRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AuthRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.ParticipantRepository;
 import io.jsonwebtoken.Claims;
@@ -15,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.prefs.Preferences;
 
 public class AuthorizationController {
     @FXML
@@ -34,15 +37,22 @@ public class AuthorizationController {
             String role = claims.getBody().get("role", String.class);
 
             if (role.equals("ADMIN")) {
-                App.openWindow("mainAdmin.fxml", "Quiz administration", null);
+                AdminRepository adminRepository = new AdminRepository(token);
+                Admin admin = adminRepository.getByName(claims.getBody().getSubject());
+                Preferences preferences = Preferences.userRoot();
+                preferences.putLong("quizUserId", admin.getId());
+                App.openWindow("mainAdmin.fxml", "Quiz administration", token);
                 App.closeWindow(actionEvent);
             } else if (role.equals("PARTICIPANT")) {
+                ParticipantRepository participantRepository = new ParticipantRepository(token);
+                Participant participant = participantRepository.getByUsername(claims.getBody().getSubject());
+                Preferences preferences = Preferences.userRoot();
+                preferences.putLong("quizUserId", participant.getId());
                 App.openWindow("main.fxml", "Quiz", token);
                 App.closeWindow(actionEvent);
             }
         } catch (IOException | IllegalArgumentException e) {
             App.showAlert("Error", e.getMessage(), Alert.AlertType.ERROR);
-            e.printStackTrace();
         }
     }
 

@@ -5,6 +5,15 @@
 
 <AnchorPane prefHeight="540.0" prefWidth="680.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dmitriikuzmin.quizspringbootclient.controller.MainAdminController">
    <children>
-      <Label layoutX="45.0" layoutY="45.0" text="Administration" />
+      <HBox layoutX="59.0" layoutY="45.0" prefHeight="17.0" prefWidth="208.0" spacing="4.0">
+         <children>
+            <Label fx:id="positionLabel" text="Position:" />
+            <Label fx:id="firstnameLabel" text="Firstname" />
+            <Label fx:id="lastnameLabel" text="Lastname" />
+         </children>
+      </HBox>
+      <ListView fx:id="participantsListView" layoutX="59.0" layoutY="87.0" prefHeight="418.0" prefWidth="220.0" />
+      <ListView fx:id="quizzesListView" layoutX="289.0" layoutY="87.0" prefHeight="418.0" prefWidth="349.0" />
+      <Button layoutX="568.0" layoutY="41.0" mnemonicParsing="false" onAction="#logoutButton" prefHeight="25.0" prefWidth="71.0" text="Log Out" />
    </children>
 </AnchorPane>

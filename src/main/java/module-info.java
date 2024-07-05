@@ -9,6 +9,7 @@ module com.dmitriikuzmin.quizspringbootclient {
     requires retrofit2.converter.jackson;
     requires jjwt;
     requires com.fasterxml.jackson.datatype.jsr310;
+    requires java.prefs;
 
 
     opens com.dmitriikuzmin.quizspringbootclient to javafx.fxml;
