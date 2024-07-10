@@ -72,7 +72,7 @@ public class GetQuizController implements ControllerData<String> {
         QuizRepository quizRepository = new QuizRepository(token);
         try {
             Quiz quiz = quizRepository.post(this.participant.getId(), numberOfQuestions, categoryInt, difficulty);
-            System.out.println(quiz);
+            App.openWindow("quiz.fxml", "Quiz", quiz);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.prefs.Preferences;
 
@@ -61,6 +62,9 @@ public class MainController implements ControllerData<String> {
         try {
             Preferences preferences = Preferences.userRoot();
             preferences.putLong("quizUserId", -1);
+            preferences.put("quizUserToken", "");
+            preferences.put("quizTokenDateTime", "");
+            preferences.put("quizUserRole", "");
             App.openWindow("authorization.fxml", "Authorization", null);
             App.closeWindow(actionEvent);
         } catch (IOException e) {

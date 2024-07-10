@@ -3,16 +3,16 @@ package com.dmitriikuzmin.quizspringbootclient.controller;
 import com.dmitriikuzmin.quizspringbootclient.App;
 import com.dmitriikuzmin.quizspringbootclient.model.Admin;
 import com.dmitriikuzmin.quizspringbootclient.model.Participant;
-import com.dmitriikuzmin.quizspringbootclient.model.Question;
 import com.dmitriikuzmin.quizspringbootclient.model.Quiz;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AdminRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.ParticipantRepository;
-import javafx.animation.ParallelTransition;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,6 +52,17 @@ public class MainAdminController implements ControllerData<String> {
             List<Participant> participants = participantRepository.getAll();
             this.participantsListView.setItems(FXCollections.observableList(participants));
             this.quizzesListView.setItems(FXCollections.observableList(participants.get(0).getQuizzes()));
+
+            this.participantsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    if (mouseEvent.getClickCount() == 2) {
+                        Participant participant = participantsListView.getSelectionModel().getSelectedItem();
+                        System.out.println(participant);
+                        showParticipantQuizzes(participant);
+                    }
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -61,10 +72,18 @@ public class MainAdminController implements ControllerData<String> {
         try {
             Preferences preferences = Preferences.userRoot();
             preferences.putLong("quizUserId", -1);
+            preferences.put("quizUserToken", "");
+            preferences.put("quizTokenDateTime", "");
+            preferences.put("quizUserRole", "");
             App.openWindow("authorization.fxml", "Authorization", null);
             App.closeWindow(actionEvent);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void showParticipantQuizzes(Participant participant) {
+        //TODO ad no quizzes case
+        this.quizzesListView.setItems(FXCollections.observableList(participant.getQuizzes()));
     }
 }

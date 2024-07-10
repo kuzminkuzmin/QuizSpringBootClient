@@ -3,10 +3,10 @@ package com.dmitriikuzmin.quizspringbootclient.controller;
 import com.dmitriikuzmin.quizspringbootclient.App;
 import com.dmitriikuzmin.quizspringbootclient.model.Admin;
 import com.dmitriikuzmin.quizspringbootclient.model.Participant;
+import com.dmitriikuzmin.quizspringbootclient.model.User;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AdminRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.AuthRepository;
 import com.dmitriikuzmin.quizspringbootclient.retrofit.ParticipantRepository;
-import com.dmitriikuzmin.quizspringbootclient.util.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -17,8 +17,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
-import java.lang.constant.Constable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.prefs.Preferences;
 
@@ -42,28 +42,29 @@ public class AuthorizationController {
             if (role.equals("ADMIN")) {
                 AdminRepository adminRepository = new AdminRepository(token);
                 Admin admin = adminRepository.getByName(claims.getBody().getSubject());
-
-                Preferences preferences = Preferences.userRoot();
-                preferences.putLong("quizUserId", admin.getId());
-                preferences.put("quizUserToken", token);
-
+                saveUserData(token, role, admin.getId(), admin);
                 App.openWindow("mainAdmin.fxml", "Quiz administration", token);
                 App.closeWindow(actionEvent);
+
             } else if (role.equals("PARTICIPANT")) {
                 ParticipantRepository participantRepository = new ParticipantRepository(token);
                 Participant participant = participantRepository.getByUsername(claims.getBody().getSubject());
-
-                Preferences preferences = Preferences.userRoot();
-                preferences.putLong("quizUserId", participant.getId());
-                preferences.put("quizUserToken", token);
-                preferences.put("quizTokenDateTime", LocalDateTime.now().toString());
-
+                saveUserData(token, role, participant.getId(), participant);
                 App.openWindow("main.fxml", "Quiz", token);
                 App.closeWindow(actionEvent);
             }
         } catch (IOException | IllegalArgumentException e) {
             App.showAlert("Error", e.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    private void saveUserData(String token, String role, long id, User user) {
+        Preferences preferences = Preferences.userRoot();
+        preferences.putLong("quizUserId", id);
+        preferences.put("quizUserToken", token);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS");
+        preferences.put("quizTokenDateTime", LocalDateTime.now().format(dateTimeFormatter));
+        preferences.put("quizUserRole", role);
     }
 
     @FXML

@@ -30,6 +30,16 @@ public class Quiz {
 
     @Override
     public String toString() {
-        return "Quiz" + " " + id + " " + dateTimeRequested;
+        long avg = 0;
+        long wrightCounter = 0;
+        for (Question question : this.questions) {
+            if (question.getResult().equals(QuestionResult.RIGHT)) {
+                wrightCounter++;
+            }
+        }
+        avg = wrightCounter / questions.size();
+        return questions.get(0).getCategory() + ", " +
+                questions.get(0).getDifficulty() + ", average result: " +
+                avg;
     }
 }

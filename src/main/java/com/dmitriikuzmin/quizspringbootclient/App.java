@@ -1,6 +1,7 @@
 package com.dmitriikuzmin.quizspringbootclient;
 
 import com.dmitriikuzmin.quizspringbootclient.controller.ControllerData;
+import com.dmitriikuzmin.quizspringbootclient.util.Constants;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.fxml.FXMLLoader;
@@ -20,25 +21,32 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         Preferences preferences = Preferences.userRoot();
         long userId = preferences.getLong("quizUserId", -1);
-        //TODO add token to Preferences, check token expired
         String token = preferences.get("quizUserToken", "");
-
         String tokenDate = preferences.get("quizTokenDateTime", "");
 
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime localDateTime = LocalDateTime.parse(tokenDate, dateTimeFormatter);
-        System.out.println(localDateTime);
+        boolean tokenExpired = false;
+        if (!tokenDate.isEmpty()) {
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSS");
+            LocalDateTime localDateTime = LocalDateTime.parse(tokenDate, dateTimeFormatter);
+            if (LocalDateTime.now().isAfter(localDateTime.plusSeconds(Constants.TOKEN_EXPIRE))) {
+                tokenExpired = true;
+            }
+        }
+        System.out.println(tokenExpired);
 
-        if (userId == -1 || token.isEmpty()) {
+        if (userId == -1 || tokenExpired) {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("authorization.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 240, 360);
             stage.setTitle("Log In");
             stage.setScene(scene);
             stage.show();
         } else {
-            App.openWindow("main.fxml", "Quiz", token);
+            if (preferences.get("quizUserRole", "").equals("PARTICIPANT")) {
+                App.openWindow("main.fxml", "Quiz", token);
+            } else if (preferences.get("quizUserRole", "").equals("ADMIN")) {
+                App.openWindow("mainAdmin.fxml", "Quiz administration", token);
+            }
         }
-
     }
 
     public static void main(String[] args) {
