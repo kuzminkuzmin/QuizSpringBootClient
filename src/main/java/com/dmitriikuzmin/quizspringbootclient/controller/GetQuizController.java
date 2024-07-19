@@ -56,29 +56,42 @@ public class GetQuizController implements ControllerData<String> {
 
     @FXML
     public void startButton(ActionEvent actionEvent) {
-        int numberOfQuestions = Integer.parseInt(numberOfQuestionsTextField.getText());
-        if (numberOfQuestions < 1 || numberOfQuestions > 10) {
-            App.showAlert("Error", "Number must be from 1 to 10", Alert.AlertType.ERROR);
-        }
-        String category = categoryComboBox.getSelectionModel().getSelectedItem();
-        int categoryInt = this.category.get(category);
-        if (category.isEmpty()) {
-            App.showAlert("Error", "Please select a category", Alert.AlertType.ERROR);
-        }
-        String difficulty = difficultyComboBox.getSelectionModel().getSelectedItem().toLowerCase();
-        if (difficulty.isEmpty()) {
-            App.showAlert("Error", "Please select a difficulty", Alert.AlertType.ERROR);
-        }
-        QuizRepository quizRepository = new QuizRepository(token);
         try {
-            Quiz quiz = quizRepository.post(this.participant.getId(), numberOfQuestions, categoryInt, difficulty);
-            App.openWindow("quiz.fxml", "Quiz", quiz);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            int numberOfQuestions = Integer.parseInt(numberOfQuestionsTextField.getText());
+            if (numberOfQuestions < 1 || numberOfQuestions > 10) {
+                App.showAlert("Error", "Number must be from 1 to 10", Alert.AlertType.ERROR);
+            }
+            String category = categoryComboBox.getSelectionModel().getSelectedItem();
+
+            int categoryInt = this.category.get(category);
+            if (category.isEmpty()) {
+                App.showAlert("Error", "Please select a category", Alert.AlertType.ERROR);
+            }
+
+            String difficulty = difficultyComboBox.getSelectionModel().getSelectedItem().toLowerCase();
+            if (difficulty.isEmpty()) {
+                App.showAlert("Error", "Please select a difficulty", Alert.AlertType.ERROR);
+            }
+
+            QuizRepository quizRepository = new QuizRepository(token);
+            try {
+                Quiz quiz = quizRepository.post(this.participant.getId(), numberOfQuestions, categoryInt, difficulty);
+                App.openWindowAndWait("quiz.fxml", "Quiz", quiz);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (NumberFormatException | NullPointerException e) {
+            App.showAlert("Error", "Please enter a valid number and choose category with difficulty", Alert.AlertType.ERROR);
         }
     }
 
     @FXML
-    public void saveButton(ActionEvent actionEvent) {
+    public void closeButton(ActionEvent actionEvent) {
+        try {
+            App.openWindow("main.fxml", "Quiz", token);
+            App.closeWindow(actionEvent);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

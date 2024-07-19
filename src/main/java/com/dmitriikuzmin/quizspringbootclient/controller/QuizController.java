@@ -19,6 +19,7 @@ import java.util.List;
 
 public class QuizController implements ControllerData<Quiz> {
     private Quiz quiz;
+
     private int quizProgress = 0;
     private final HBox header = new HBox();
     private final VBox body = new VBox();
@@ -42,10 +43,8 @@ public class QuizController implements ControllerData<Quiz> {
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (chosen && quizProgress + 1 == quiz.getQuestions().size()) {
-                    System.out.println("Show result");
                     body.getChildren().add(showResult());
-                }
-                else if (chosen) {
+                } else if (chosen) {
                     // answer result
                     if (right) {
                         quiz.getQuestions().get(quizProgress).setResult(QuestionResult.RIGHT);
@@ -64,9 +63,6 @@ public class QuizController implements ControllerData<Quiz> {
 
                     // show next question
                     body.getChildren().add(nextQuestion());
-
-                    System.out.println(quizProgress + 1 + " :::: " + quiz.getQuestions().size());
-
                 } else {
                     App.showAlert("Warning", "Choose answer", Alert.AlertType.WARNING);
                 }
@@ -121,9 +117,7 @@ public class QuizController implements ControllerData<Quiz> {
         clearContainers();
         this.buttonsHBox.getChildren().clear();
         Button doneButton = new Button("Done");
-        Button newQuizButton = new Button("New Quiz");
         this.buttonsHBox.setSpacing(24);
-        this.buttonsHBox.getChildren().add(newQuizButton);
         this.buttonsHBox.getChildren().add(doneButton);
 
         Label resultLabel = new Label("Your quiz result:"
@@ -145,6 +139,15 @@ public class QuizController implements ControllerData<Quiz> {
             vBox.getChildren().add(questionVBox);
         }
 
+        EventHandler<ActionEvent> doneButtonHandler = new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                if (chosen && quizProgress + 1 == quiz.getQuestions().size()) {
+                    App.closeWindow(actionEvent);
+                }
+            }
+        };
+        doneButton.setOnAction(doneButtonHandler);
         return resultPane;
     }
 

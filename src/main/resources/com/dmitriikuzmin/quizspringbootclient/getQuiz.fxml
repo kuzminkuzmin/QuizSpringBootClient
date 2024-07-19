@@ -9,7 +9,7 @@
       <ComboBox fx:id="categoryComboBox" layoutX="150.0" layoutY="280.0" prefHeight="25.0" prefWidth="180.0" />
       <ComboBox fx:id="difficultyComboBox" layoutX="350.0" layoutY="280.0" prefHeight="25.0" prefWidth="180.0" />
       <Button layoutX="150.0" layoutY="325.0" mnemonicParsing="false" onAction="#startButton" prefHeight="25.0" prefWidth="180.0" text="Start" />
-      <Button layoutX="350.0" layoutY="325.0" mnemonicParsing="false" onAction="#saveButton" prefHeight="25.0" prefWidth="180.0" text="Save" />
+      <Button layoutX="350.0" layoutY="325.0" mnemonicParsing="false" onAction="#closeButton" prefHeight="25.0" prefWidth="180.0" text="Close" />
       <Label layoutX="150.0" layoutY="205.0" text="Number of questions:" />
       <Label layoutX="150.0" layoutY="260.0" text="Select Category:" />
       <Label layoutX="350.0" layoutY="260.0" text="Select Difficulty:" />
